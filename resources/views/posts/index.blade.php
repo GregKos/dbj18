@@ -69,9 +69,11 @@
 
 @section('bot')
 <script>
+    /* Enable tooltips for actions */
     $(function () {
         $('[data-toggle="tooltip"]').tooltip()
     });
+    /* Function to confirm and delete a post */
     function deletePost(id) {
         swal({
             title: 'Are you sure?',
@@ -79,7 +81,6 @@
             type: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',
-            cancelButtonColor: '#fdfdfe',
             confirmButtonText: 'Yes, delete it!',
             showLoaderOnConfirm: true,
             preConfirm: () => {
@@ -112,6 +113,38 @@
                     type: 'error'
                 })
             }
+        });
+    }
+    /* Function to publish or unpublish a post */
+    function togglePublished(id, target_state) {
+        headers = new Headers({ 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') });
+        fetch(`/posts/toggle/${id}/${target_state}`, { method: 'post', headers, credentials: "same-origin" })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(response.statusText)
+            }
+            return response.json();
+        })
+        .then(result => {
+            if (result.type === 'success') {
+                swal({
+                    title: `Success!`,
+                    text: result.message,
+                    type: 'success'
+                }).then((result) => {
+                    window.location.reload();
+                })
+            } else {
+                swal({
+                    title: `Something went wrong...`,
+                    type: 'error'
+                })
+            }
+        })
+        .catch(error => {
+            alert(
+                `Request failed: ${error}`
+            )
         });
     }
 </script>

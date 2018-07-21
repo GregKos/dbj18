@@ -16,3 +16,4 @@ Route::get('/', function () {
 })->name('siteindex');
 
 Route::resource('posts', 'PostController');
+Route::post('/posts/toggle/{id}/{target_state}', 'PostController@togglePublished')->name('posts.toggle');
