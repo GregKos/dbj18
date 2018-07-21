@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Post;
 
 class PostController extends Controller
@@ -14,7 +15,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $data['posts'] = Post::all()->sortByDesc('created_at');
+        $data['posts'] = DB::table('posts')->orderBy('created_at', 'desc')->paginate(10);
         return view('posts.index', $data);
     }
 
