@@ -82,6 +82,44 @@ class PostController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $result = DB::table('posts')->where('id', $id)->delete();
+        return response()->json([
+            'type' => ($result) ? 'success' : 'failure'
+        ]);
+    }
+
+    /**
+     * Toggle whether the post is published or unpublished.
+     *
+     * @param  int  $id
+     * @param  int  $target_state
+     * @return \Illuminate\Http\Response
+     */
+    public function togglePublished($id, $target_state)
+    {
+        $id = intval($id);
+        if($id > 0) {
+            if($target_state) {
+                $result = DB::table('posts')->where('id', $id)->update(['published' => 1, 'published_at' => date('Y-m-d H:i:s')]);
+            } else {
+                $result = DB::table('posts')->where('id', $id)->update(['published' => 0, 'published_at' => null]);
+            }
+            if($result > 0) {
+                return response()->json([
+                    'type' => 'success',
+                    'message' => 'Post Successfully ' . (($target_state) ? 'Published' : 'Unpublished') . '!'
+                ]);
+            } else {
+                return response()->json([
+                    'type' => 'success',
+                    'message' => 'Error Toggling Status'
+                ]);
+            }
+        } else {
+            return response()->json([
+                'type' => 'success',
+                'message' => 'There was an error. Please try again.'
+            ]);
+        }
     }
 }
