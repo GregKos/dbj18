@@ -7,8 +7,8 @@
 
 @section('main')
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
-    <h1 class="h2">Post List</h1>
-    <div class="btn btn-primary">Add Post</div>
+    <h1 class="h2">Posts List</h1>
+    <a class="btn btn-primary" href="{{route('posts.create')}}">Add Post</a>
 </div>
 <div class="pb-2 mb-3">
     <div class="table-responsive">
@@ -41,7 +41,9 @@
                         </span>
                         @endif
                         <span class="text-success ml-2 clickable-custom" data-toggle="tooltip" data-placement="top" title="Edit Post {{$post->id}}">
-                            <span data-feather="edit"></span>
+                            <a class="text-success no-decoration" href="{{route('posts.edit', [$post->id])}}">
+                                <span data-feather="edit"></span>
+                            </a>
                         </span>
                         <span class="text-danger ml-2 clickable-custom" data-toggle="tooltip" data-placement="top" title="Delete Post {{$post->id}}" onclick="deletePost({{$post->id}})">
                             <span data-feather="delete"></span>
