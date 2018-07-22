@@ -26,7 +26,7 @@ class PostController extends Controller
      */
     public function create()
     {
-        //
+        return view('posts.add');
     }
 
     /**
@@ -59,7 +59,8 @@ class PostController extends Controller
      */
     public function edit($id)
     {
-        //
+        $data['post'] = DB::table('posts')->where('id', $id)->first();
+        return view('posts.edit', $data);
     }
 
     /**
