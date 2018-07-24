@@ -38,7 +38,17 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validatedData = $request->validate([
+            'title' => 'required|max:191',
+            'subtitle' => 'max:191',
+            'content' => 'required',
+            'published' => 'required|integer|max:1',
+            'published_at' => 'required_if:published,1|nullable|date',
+            'filename' => 'nullable'
+        ]);
+        $post = Post::create($validatedData);
+
+        return redirect()->route('posts.index')->with('success', 'Post Added!');
     }
 
     /**
@@ -134,7 +144,7 @@ class PostController extends Controller
     public function handleUpload(Request $request)
     {
         if($request->hasFile('file') && $request->file('file')->isValid()) {
-            $path = $request->file->store('postfiles');
+            $path = $request->file->store('public/postfiles');
             return response()->json([
                 'type' => 'success',
                 'message' => 'File Successfully Uploaded!',
@@ -156,7 +166,7 @@ class PostController extends Controller
      */
     public function deleteUpload($filename)
     {
-        if(Storage::delete('postfiles/'.$filename)) {
+        if(Storage::delete('public/postfiles/'.$filename)) {
             return response()->json([
                 'type' => 'success',
                 'message' => 'File Successfully Deleted!',

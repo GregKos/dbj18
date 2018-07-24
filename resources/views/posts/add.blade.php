@@ -4,8 +4,6 @@
 <link rel="stylesheet" href="{{ asset('css/fa.css') }}">
 <link rel="stylesheet" href="{{ asset('css/tempusdominus.css') }}">
 <link rel="stylesheet" href="{{ asset('css/dropzone.css') }}">
-<script src="{{ asset('js/sweetalert2.js') }}"></script>
-{{-- <script src="{{ asset('js/promise-polyfill.js') }}"></script> --}}
 <script src="{{ asset('js/moment.js') }}"></script>
 <script src="{{ asset('js/tempusdominus.js') }}"></script>
 <script src="{{ asset('js/dropzone.js') }}"></script>
@@ -17,7 +15,7 @@
     <a class="btn btn-outline-secondary" href="{{route('posts.index')}}">Back to list</a>
 </div>
 <div class="pb-2 mb-3">
-    <form id="addform" action="{{route('posts.create')}}" method="post">
+    <form id="addform" action="{{route('posts.store')}}" method="post">
         {!! csrf_field() !!}
         <div class="form-row">
             <div class="form-group col-md-6">
@@ -31,7 +29,7 @@
         </div>
         <div class="form-group">
             <label for="inputContent">Content</label>
-            <textarea class="form-control" id="inputContent" rows="3" name="content" placeholder="The full post body." value="{{old('content')}}"></textarea>
+            <textarea class="form-control" id="inputContent" rows="3" name="content" placeholder="The full post body. This could be a WYSIWYG editor." value="{{old('content')}}"></textarea>
         </div>
         <div class="form-row">
             <div class="form-group col-md-6">
@@ -44,11 +42,11 @@
                         <label for="inputState">Post Published?</label>
                         <div class="form-group">
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="published" id="inlinePublished" value="1" checked="checked">
+                                <input class="form-check-input" type="radio" name="published" id="inlinePublished" value="1" @if(null === old('published') || old('published'))checked="checked"@endif>
                                 <label class="form-check-label" for="inlinePublished">Yes</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="published" id="inlineUnpublished" value="0">
+                                <input class="form-check-input" type="radio" name="published" id="inlineUnpublished" value="0" @if(null !== old('published') && intval(old('published')) === 0)checked="checked"@endif>
                                 <label class="form-check-label" for="inlineUnpublished">No</label>
                             </div>
                         </div>
@@ -65,7 +63,7 @@
                 </div>
             </div>
         </div>
-        <input type="hidden" name="file" value="" id="filefield">
+        <input type="hidden" name="filename" value="{{old('filename')}}" id="filefield">
         <button type="submit" class="btn btn-primary float-right">Add!</button>
     </form>
     <div class="row">
@@ -79,9 +77,14 @@
 @section('bot')
 <script>
     $(function () {
-        $('#inputDate').datetimepicker();
+        $('#inputDate').datetimepicker({
+            defaultDate: "{{old('published_at')}}",
+            format: 'YYYY-MM-DD HH:mm'
+        });
     });
-    Dropzone.options.myAwesomeDropzone = {
+    Dropzone.autoDiscover = false;
+    var actualFileUuid = '';
+    var myAwesomeDropzone = new Dropzone("#my-awesome-dropzone", {
         withCredentials: true,
         maxFiles: 1,
         headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
@@ -89,23 +92,31 @@
         addRemoveLinks: true,
         init: function() {
             this.on('success', function(file, resp) {
-                // console.log(file.upload.uuid,resp);
-                $('#filefield').val(resp.path.split('/')[1]);
+                actualFileUuid = file.upload.uuid;
+                $('#filefield').val(resp.path.split('/')[2]);
             });
             this.on('removedfile', function(file) {
-                // console.log(file.upload.uuid);
-                $.ajax({
-                    url: "/posts/upload/" + $('#filefield').val(),
-                    headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-                    dataType: 'json',
-                    method: 'DELETE',
-                    success: function(resp) {
-                        if(resp.del == 'yes') $('#filefield').val('');
-                    }
-                });
+                if(file.upload.uuid == actualFileUuid || file.name == $('#filefield').val()) {
+                    $.ajax({
+                        url: "/posts/upload/" + $('#filefield').val(),
+                        headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                        dataType: 'json',
+                        method: 'DELETE',
+                        success: function(resp) {
+                            if(resp.del == 'yes') $('#filefield').val('');
+                        }
+                    });
+                }
             });
         }
-    };
+    });
+    @if(old('filename'))
+    var mockFile = { name: "{{old('filename')}}", size: 0 };
+    myAwesomeDropzone.emit("addedfile", mockFile);
+    myAwesomeDropzone.emit("thumbnail", mockFile, "{{Storage::url('public/postfiles/'.old('filename'))}}");
+    myAwesomeDropzone.emit("complete", mockFile);
+    myAwesomeDropzone.options.maxFiles = myAwesomeDropzone.options.maxFiles - 1;
+    @endif
     $('body').on('change', 'input[name=published]', function() {
         if($('input[name=published]:checked').val() == 1) {
             $('#published_at_container').show();
@@ -113,5 +124,6 @@
             $('#published_at_container').hide();
         }
     });
+    $('input[name=published]').change();
 </script>
 @endsection
