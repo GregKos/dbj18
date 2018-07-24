@@ -53,7 +53,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-group col-md-6">
+                    <div class="form-group col-md-6" id="published_at_container">
                         <label for="inputDate">Published At</label>
                         <div class="input-group date" id="inputDate" data-target-input="nearest">
                             <input type="text" class="form-control datetimepicker-input" name="published_at" data-toggle="datetimepicker" data-target="#inputDate"/>
@@ -65,11 +65,12 @@
                 </div>
             </div>
         </div>
+        <input type="hidden" name="file" value="" id="filefield">
         <button type="submit" class="btn btn-primary float-right">Add!</button>
     </form>
     <div class="row">
         <div class="col-12">
-            <form action="/file-upload" class="dropzone" id="my-awesome-dropzone"></form>
+            <form action="{{route('posts.upload')}}" class="dropzone" id="my-awesome-dropzone"></form>
         </div>
     </div>
 </div>
@@ -84,7 +85,33 @@
         withCredentials: true,
         maxFiles: 1,
         headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-        dictDefaultMessage: 'Drop a file here to upload and add it to the post.'
+        dictDefaultMessage: 'Drop a file here to upload and add it to the post.',
+        addRemoveLinks: true,
+        init: function() {
+            this.on('success', function(file, resp) {
+                // console.log(file.upload.uuid,resp);
+                $('#filefield').val(resp.path.split('/')[1]);
+            });
+            this.on('removedfile', function(file) {
+                // console.log(file.upload.uuid);
+                $.ajax({
+                    url: "/posts/upload/" + $('#filefield').val(),
+                    headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                    dataType: 'json',
+                    method: 'DELETE',
+                    success: function(resp) {
+                        if(resp.del == 'yes') $('#filefield').val('');
+                    }
+                });
+            });
+        }
     };
+    $('body').on('change', 'input[name=published]', function() {
+        if($('input[name=published]:checked').val() == 1) {
+            $('#published_at_container').show();
+        } else {
+            $('#published_at_container').hide();
+        }
+    });
 </script>
 @endsection

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use App\Post;
 
 class PostController extends Controller
@@ -48,7 +49,7 @@ class PostController extends Controller
      */
     public function show($id)
     {
-        //
+        // Unused in current scope
     }
 
     /**
@@ -72,7 +73,7 @@ class PostController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        // delete old and/or unused images
     }
 
     /**
@@ -116,6 +117,51 @@ class PostController extends Controller
                     'message' => 'Error Toggling Status'
                 ]);
             }
+        } else {
+            return response()->json([
+                'type' => 'success',
+                'message' => 'There was an error. Please try again.'
+            ]);
+        }
+    }
+
+    /**
+     * Save a file and return its generated filename.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function handleUpload(Request $request)
+    {
+        if($request->hasFile('file') && $request->file('file')->isValid()) {
+            $path = $request->file->store('postfiles');
+            return response()->json([
+                'type' => 'success',
+                'message' => 'File Successfully Uploaded!',
+                'path' => $path
+            ]);
+        } else {
+            return response()->json([
+                'type' => 'success',
+                'message' => 'There was an error. Please try again.'
+            ]);
+        }
+    }
+
+    /**
+     * Delete a file by filename.
+     *
+     * @param  String $filename
+     * @return \Illuminate\Http\Response
+     */
+    public function deleteUpload($filename)
+    {
+        if(Storage::delete('postfiles/'.$filename)) {
+            return response()->json([
+                'type' => 'success',
+                'message' => 'File Successfully Deleted!',
+                'del' => 'yes'
+            ]);
         } else {
             return response()->json([
                 'type' => 'success',

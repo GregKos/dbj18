@@ -17,3 +17,5 @@ Route::get('/', function () {
 
 Route::resource('posts', 'PostController');
 Route::post('/posts/toggle/{id}/{target_state}', 'PostController@togglePublished')->name('posts.toggle');
+Route::post('/posts/upload', 'PostController@handleUpload')->name('posts.upload');
+Route::delete('/posts/upload/{path}', 'PostController@deleteUpload')->name('posts.deleteupload');
