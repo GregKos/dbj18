@@ -83,7 +83,6 @@
         });
     });
     Dropzone.autoDiscover = false;
-    var actualFileUuid = '';
     var myAwesomeDropzone = new Dropzone("#my-awesome-dropzone", {
         withCredentials: true,
         maxFiles: 1,
@@ -92,11 +91,10 @@
         addRemoveLinks: true,
         init: function() {
             this.on('success', function(file, resp) {
-                actualFileUuid = file.upload.uuid;
                 $('#filefield').val(resp.path.split('/')[2]);
             });
             this.on('removedfile', function(file) {
-                if(file.upload.uuid == actualFileUuid || file.name == $('#filefield').val()) {
+                if(file.name == $('#filefield').val()) {
                     $.ajax({
                         url: "/posts/upload/" + $('#filefield').val(),
                         headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
