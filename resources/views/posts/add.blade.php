@@ -29,7 +29,7 @@
         </div>
         <div class="form-group">
             <label for="inputContent">Content</label>
-            <textarea class="form-control" id="inputContent" rows="3" name="content" placeholder="The full post body. This could be a WYSIWYG editor." value="{{old('content')}}"></textarea>
+            <textarea class="form-control" id="inputContent" rows="3" name="content" placeholder="The full post body. This could be a WYSIWYG editor.">{{old('content')}}</textarea>
         </div>
         <div class="form-row">
             <div class="form-group col-md-6">

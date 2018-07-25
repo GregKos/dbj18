@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Post;
 
@@ -16,7 +15,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $data['posts'] = DB::table('posts')->orderBy('created_at', 'desc')->paginate(10);
+        $data['posts'] = Post::orderBy('created_at', 'desc')->paginate(10);
         return view('posts.index', $data);
     }
 
@@ -70,7 +69,7 @@ class PostController extends Controller
      */
     public function edit($id)
     {
-        $data['post'] = DB::table('posts')->where('id', $id)->first();
+        $data['post'] = Post::find($id);
         return view('posts.edit', $data);
     }
 
@@ -83,7 +82,19 @@ class PostController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // delete old and/or unused images
+        $validatedData = $request->validate([
+            'title' => 'required|max:191',
+            'subtitle' => 'max:191',
+            'content' => 'required',
+            'published' => 'required|integer|max:1',
+            'published_at' => 'required_if:published,1|nullable|date',
+            'filename' => 'nullable'
+        ]);
+        $post = Post::find($id);
+        if($post->filename && (!$validatedData['filename'] || $validatedData['filename'] !== $post->filename)) Storage::delete('public/postfiles/'.$post->filename);
+        $post->update($validatedData);
+
+        return redirect()->route('posts.index')->with('success', 'Post Edited!');
     }
 
     /**
@@ -94,7 +105,7 @@ class PostController extends Controller
      */
     public function destroy($id)
     {
-        $result = DB::table('posts')->where('id', $id)->delete();
+        $result = Post::where('id', $id)->delete();
         return response()->json([
             'type' => ($result) ? 'success' : 'failure'
         ]);
@@ -112,9 +123,9 @@ class PostController extends Controller
         $id = intval($id);
         if($id > 0) {
             if($target_state) {
-                $result = DB::table('posts')->where('id', $id)->update(['published' => 1, 'published_at' => date('Y-m-d H:i:s')]);
+                $result = Post::where('id', $id)->update(['published' => 1, 'published_at' => date('Y-m-d H:i:s')]);
             } else {
-                $result = DB::table('posts')->where('id', $id)->update(['published' => 0, 'published_at' => null]);
+                $result = Post::where('id', $id)->update(['published' => 0, 'published_at' => null]);
             }
             if($result > 0) {
                 return response()->json([

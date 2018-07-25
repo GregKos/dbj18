@@ -1,16 +1,31 @@
 @if($errors->any())
-    <div class="alert alert-danger">
-        Please correct the following issues:
-        <ul>
-            @foreach($errors->all() as $error)
-            <li>{{$error}}</li>
-            @endforeach
-        </ul>
-    </div>
+    <script>
+        swal({
+            type: 'error',
+            title: 'Please correct the following issues',
+            html: '<ul style="list-style: none;padding-left: 0;">@foreach($errors->all() as $error)<li>{{$error}}</li>@endforeach</ul>'
+        })
+    </script>
 @endif
 @if(session('success'))
-    <div class="alert alert-success">{{session('success')}}</div>
+    <script>
+        swal({
+            position: 'top-end',
+            type: 'success',
+            title: '{{session('success')}}',
+            showConfirmButton: false,
+            timer: 1500
+        });
+    </script>
 @endif
 @if(session('error'))
-    <div class="alert alert-danger">{{session('error')}}</div>
+    <script>
+        swal({
+            position: 'top-end',
+            type: 'error',
+            title: '{{session('error')}}',
+            showConfirmButton: false,
+            timer: 1500
+        });
+    </script>
 @endif

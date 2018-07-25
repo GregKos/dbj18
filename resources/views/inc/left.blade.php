@@ -14,7 +14,7 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link @if(Request::is('categories*')) active @endif" href="#">
+                <a class="nav-link @if(Request::is('categories*')) active @endif" href="{{ route('categories.index') }}">
                     <span data-feather="folder"></span>
                     Categories
                 </a>

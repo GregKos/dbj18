@@ -1,10 +1,5 @@
 @extends('layouts.app')
 
-@section('head')
-<script src="{{ asset('js/sweetalert2.js') }}"></script>
-{{-- <script src="{{ asset('js/promise-polyfill.js') }}"></script> --}}
-@endsection
-
 @section('main')
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
     <h1 class="h2">Posts List</h1>
