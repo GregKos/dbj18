@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Category;
 
 class CategoryController extends Controller
 {
@@ -13,7 +14,8 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        //
+        $data['categories'] = Category::orderBy('created_at', 'desc')->paginate(10);
+        return view('categories.index', $data);
     }
 
     /**
@@ -23,7 +25,7 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        //
+        return view('categories.add');
     }
 
     /**
@@ -34,7 +36,16 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validatedData = $request->validate([
+            'title' => 'required|max:191',
+            'slug' => 'required|max:191'
+        ]);
+        $category = new Category;
+        $category->title = $validatedData['title'];
+        $category->slug = $validatedData['slug'];
+        $category->save();
+
+        return redirect()->route('categories.index')->with('success', 'Category Added!');
     }
 
     /**
@@ -45,7 +56,7 @@ class CategoryController extends Controller
      */
     public function show($id)
     {
-        //
+        // Unused in current scope
     }
 
     /**
@@ -56,7 +67,8 @@ class CategoryController extends Controller
      */
     public function edit($id)
     {
-        //
+        $data['category'] = Category::find($id);
+        return view('categories.edit', $data);
     }
 
     /**
@@ -68,7 +80,16 @@ class CategoryController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $validatedData = $request->validate([
+            'title' => 'required|max:191',
+            'slug' => 'required|max:191'
+        ]);
+        $category = Category::find($id);
+        $category->title = $validatedData['title'];
+        $category->slug = $validatedData['slug'];
+        $category->save();
+
+        return redirect()->route('categories.index')->with('success', 'Category Edited!');
     }
 
     /**
@@ -79,6 +100,9 @@ class CategoryController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $result = Category::destroy($id);
+        return response()->json([
+            'type' => ($result) ? 'success' : 'failure'
+        ]);
     }
 }

@@ -27,20 +27,20 @@
                     <td>@if($post->published) {{$post->published_at}} @else <em class="text-danger">Unpublished</em> @endif</td>
                     <td>
                         @if($post->published)
-                        <span class="text-primary clickable-custom" data-toggle="tooltip" data-placement="top" title="Unpublish Post {{$post->id}}" onclick="togglePublished({{$post->id}}, 0)">
+                        <span class="text-primary clickable-custom" data-toggle="tooltip" data-placement="top" title="Unpublish Post (ID:{{$post->id}})" onclick="togglePublished({{$post->id}}, 0)">
                             <span data-feather="eye"></span>
                         </span>
                         @else
-                        <span class="text-secondary clickable-custom" data-toggle="tooltip" data-placement="top" title="Publish Post {{$post->id}}" onclick="togglePublished({{$post->id}}, 1)">
+                        <span class="text-secondary clickable-custom" data-toggle="tooltip" data-placement="top" title="Publish Post (ID:{{$post->id}})" onclick="togglePublished({{$post->id}}, 1)">
                             <span data-feather="eye-off"></span>
                         </span>
                         @endif
-                        <span class="text-success ml-2 clickable-custom" data-toggle="tooltip" data-placement="top" title="Edit Post {{$post->id}}">
+                        <span class="text-success ml-2 clickable-custom" data-toggle="tooltip" data-placement="top" title="Edit Post (ID:{{$post->id}})">
                             <a class="text-success no-decoration" href="{{route('posts.edit', [$post->id])}}">
                                 <span data-feather="edit"></span>
                             </a>
                         </span>
-                        <span class="text-danger ml-2 clickable-custom" data-toggle="tooltip" data-placement="top" title="Delete Post {{$post->id}}" onclick="deletePost({{$post->id}})">
+                        <span class="text-danger ml-2 clickable-custom" data-toggle="tooltip" data-placement="top" title="Delete Post (ID:{{$post->id}})" onclick="deletePost({{$post->id}})">
                             <span data-feather="delete"></span>
                         </span>
                     </td>

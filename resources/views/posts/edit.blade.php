@@ -17,7 +17,7 @@
     <a class="btn btn-outline-secondary" href="{{route('posts.index')}}">Back to list</a>
 </div>
 <div class="pb-2 mb-3">
-    <form id="addform" action="{{route('posts.update', [$post->id])}}" method="post">
+    <form id="editform" action="{{route('posts.update', [$post->id])}}" method="post">
         {!! csrf_field() !!}
         <input type="hidden" name="_method" value="put">
         <div class="form-row">

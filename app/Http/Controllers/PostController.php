@@ -105,7 +105,7 @@ class PostController extends Controller
      */
     public function destroy($id)
     {
-        $result = Post::where('id', $id)->delete();
+        $result = Post::destroy($id);
         return response()->json([
             'type' => ($result) ? 'success' : 'failure'
         ]);
