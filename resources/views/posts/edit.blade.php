@@ -36,8 +36,15 @@
         </div>
         <div class="form-row">
             <div class="form-group col-md-6">
-                <label for="inputCategories">Categories</label>
-                <input type="text" class="form-control" id="inputCategories">
+                <label>Categories</label>
+                <div class="form-group">
+                    @foreach($categories as $category)
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="inlineCategory{{$category->id}}" name="category_id[]" value="{{$category->id}}" @if(in_array($category->id, $selected_categories))checked="checked"@endif>
+                        <label class="form-check-label" for="inlineCategory{{$category->id}}">{{$category->title}}</label>
+                    </div>
+                    @endforeach
+                </div>
             </div>
             <div class="form-group col-md-6">
                 <div class="form-row">
@@ -75,6 +82,7 @@
         </div>
     </div>
 </div>
+
 @endsection
 
 @section('bot')

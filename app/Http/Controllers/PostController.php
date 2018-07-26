@@ -26,7 +26,8 @@ class PostController extends Controller
      */
     public function create()
     {
-        return view('posts.add');
+        $data['categories'] = \App\Category::all();
+        return view('posts.add', $data);
     }
 
     /**
@@ -43,9 +44,12 @@ class PostController extends Controller
             'content' => 'required',
             'published' => 'required|integer|max:1',
             'published_at' => 'required_if:published,1|nullable|date',
-            'filename' => 'nullable'
+            'filename' => 'nullable',
+            'category_id.*' => 'integer'
         ]);
-        $post = Post::create($validatedData);
+        $categories = $validatedData['category_id'];
+        unset($validatedData['category_id']);
+        $post = Post::create($validatedData)->categories()->attach($categories);
 
         return redirect()->route('posts.index')->with('success', 'Post Added!');
     }
@@ -70,6 +74,8 @@ class PostController extends Controller
     public function edit($id)
     {
         $data['post'] = Post::find($id);
+        $data['categories'] = \App\Category::all();
+        $data['selected_categories'] = $data['post']->categories->pluck('id')->toArray();
         return view('posts.edit', $data);
     }
 
@@ -88,10 +94,14 @@ class PostController extends Controller
             'content' => 'required',
             'published' => 'required|integer|max:1',
             'published_at' => 'required_if:published,1|nullable|date',
-            'filename' => 'nullable'
+            'filename' => 'nullable',
+            'category_id.*' => 'integer'
         ]);
+        $categories = $validatedData['category_id'];
+        unset($validatedData['category_id']);
         $post = Post::find($id);
         if($post->filename && (!$validatedData['filename'] || $validatedData['filename'] !== $post->filename)) Storage::delete('public/postfiles/'.$post->filename);
+        $post->categories()->sync($categories);
         $post->update($validatedData);
 
         return redirect()->route('posts.index')->with('success', 'Post Edited!');
