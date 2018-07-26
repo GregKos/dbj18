@@ -17,6 +17,6 @@ $factory->define(App\Category::class, function (Faker $faker) {
     return [
         'title' => ucwords($faker->word(3, true)),
         'slug' => $faker->slug,
-        'created_at' => $faker->dateTimeBetween(),
+        'created_at' => $faker->dateTimeBetween('-3 years'),
     ];
 });

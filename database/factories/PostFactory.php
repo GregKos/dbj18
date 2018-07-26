@@ -14,7 +14,7 @@ use Faker\Generator as Faker;
 */
 
 $factory->define(App\Post::class, function (Faker $faker) {
-    $created_at = $faker->dateTimeBetween();
+    $created_at = $faker->dateTimeBetween('-3 years');
     $published = $faker->numberBetween(0,1);
     $published_at = ($published) ? $faker->dateTimeBetween($created_at) : null;
     return [

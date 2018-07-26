@@ -1,14 +1,12 @@
 @extends('layouts.app')
 
+@section('head')
+<script src="{{ asset('js/moment.js') }}"></script>
+@endsection
+
 @section('main')
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-    <h1 class="h2">Post Timeline</h1>
-    <div class="btn-toolbar mb-2 mb-md-0">
-        <button class="btn btn-sm btn-outline-secondary dropdown-toggle">
-            <span data-feather="calendar"></span>
-            This week
-        </button>
-    </div>
+    <h1 class="h2">12 Month Post Activity</h1>
 </div>
 <canvas class="my-4" id="myChart" width="900" height="380"></canvas>
 @endsection
@@ -17,12 +15,18 @@
 <!-- Graphs -->
 <script>
     var ctx = document.getElementById("myChart");
+    var monthlist = moment.monthsShort();
+    var curpos = monthlist.indexOf(moment().format('MMM')) + 1;
+    monthlist = monthlist.concat(monthlist.splice(0, curpos));
+    var datalist = [{{$postdata}}];
+    datalist = datalist.concat(datalist.splice(0, curpos));
     var myChart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+            labels: monthlist,
             datasets: [{
-                data: [2, 5, 4, 9, 4, 7, 3],
+                data: datalist,
+                label: '# of Posts',
                 lineTension: 0,
                 backgroundColor: 'transparent',
                 borderColor: '#007bff',
